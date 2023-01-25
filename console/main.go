@@ -18,6 +18,7 @@ func Execute(userInput UserInput) {
     }
 
     if (!ok) {
+        fmt.Println("Bad input, please select correct input from menu")
         Execute(userInput)
         return
     }
