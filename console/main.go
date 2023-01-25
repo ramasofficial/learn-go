@@ -13,7 +13,7 @@ func Execute(userInput UserInput) {
     menuSelection, ok := ShowMenu()
 
     if (menuSelection == 5) {
-        fmt.Println("Terminal closed.\nGood Bye!")
+        fmt.Println("Terminal closed.\nGood Bye!\n\n")
         return
     }
 
@@ -45,11 +45,20 @@ func SetUserInput(menuSelection int, userInput UserInput, answer float64) UserIn
     return userInput
 }
 
+var smallerTaxesThreshold int = 30000;
+var smallerTaxesMultiplier float64 = 0.20;
+var higherTaxesMultiplier float64 = 0.25;
 func calculateTax(userInput UserInput) {
-    var totalIncome float64
-    totalIncome = userInput.YearlyIncome + userInput.AdditionalIncome
+    var totalIncome, taxExemption float64
+    totalIncome = (userInput.YearlyIncome + userInput.AdditionalIncome) - userInput.TaxExemption;
 
-    fmt.Printf("\nTax: %f\n\n", totalIncome)
+    if (totalIncome < float64(smallerTaxesThreshold)) {
+        taxExemption = totalIncome * smallerTaxesMultiplier;
+    } else {
+        taxExemption = totalIncome * higherTaxesMultiplier;
+    }
+
+    fmt.Printf("\nTax: %f\n\n", taxExemption)
 }
 
 func GenerateQuestion(menuSelection int, userInput UserInput) float64 {
