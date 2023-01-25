@@ -49,23 +49,22 @@ func SetUserInput(menuSelection int, userInput UserInput, answer float64) UserIn
 var smallerTaxesThreshold int = 30000;
 var smallerTaxesMultiplier float64 = 0.20;
 var higherTaxesMultiplier float64 = 0.25;
-func calculateTax(userInput UserInput) {
-    var totalIncome, taxExemption float64
-    totalIncome = (userInput.YearlyIncome + userInput.AdditionalIncome) - userInput.TaxExemption;
+func calculateTax(userInput UserInput) float64 {
+    var totalIncome float64
+    totalIncome = (userInput.YearlyIncome + userInput.AdditionalIncome) - userInput.TaxExemption
 
     if (totalIncome < float64(smallerTaxesThreshold)) {
-        taxExemption = totalIncome * smallerTaxesMultiplier;
-    } else {
-        taxExemption = totalIncome * higherTaxesMultiplier;
+        return totalIncome * smallerTaxesMultiplier
     }
-
-    fmt.Printf("\nTax: %f\n\n", taxExemption)
+    
+    return totalIncome * higherTaxesMultiplier
 }
 
 func GenerateQuestion(menuSelection int, userInput UserInput) float64 {
     if (menuSelection == 4) {
-        calculateTax(userInput)
-        return 100.00
+        taxExemption := calculateTax(userInput)
+        fmt.Printf("\nTax: %f\n\n", taxExemption)
+        return 0
     }
 
     questions := map[int]string {

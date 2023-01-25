@@ -5,5 +5,5 @@ import (
 )
 
 func main() {
-    console.Execute(console.UserInput{YearlyIncome:0, TaxExemption:0, AdditionalIncome: 0})
+    console.Execute(console.UserInput{YearlyIncome:1000, TaxExemption:0, AdditionalIncome: 5000})
 }
