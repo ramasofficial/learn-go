@@ -6,11 +6,11 @@ import (
 )
 
 type UserInput struct {
-    YearlyIncome, TaxExemption, AdditionalIncome float64
+    YearlyIncome, AdditionalIncome, TaxExemption float64
 }
 
 func Execute(userInput UserInput) {
-    menuSelection, ok := ShowMenu()
+    menuSelection, ok := showMenu()
 
     if (menuSelection == 5) {
         fmt.Println("Terminal closed.\nGood Bye!\n\n")
@@ -18,50 +18,49 @@ func Execute(userInput UserInput) {
     }
 
     if (!ok) {
-        fmt.Println("Bad input, please select correct input from menu")
+        fmt.Println("\nBad input, please select correct input from menu!\n")
         Execute(userInput)
         return
     }
 
-    answer := GenerateQuestion(menuSelection, userInput)
-    userInput = SetUserInput(menuSelection, userInput, answer)
+    answer := generateQuestion(menuSelection, userInput)
+    userInput = setUserInput(menuSelection, userInput, answer)
 
     Execute(userInput)
     return
 }
 
-func SetUserInput(menuSelection int, userInput UserInput, answer float64) UserInput {
-    if (menuSelection == 1) {
+func setUserInput(menuSelection int, userInput UserInput, answer float64) UserInput {
+    switch menuSelection {
+    case 1:
         userInput.YearlyIncome = answer
-    }
-
-    if (menuSelection == 2) {
+    case 2:
         userInput.TaxExemption = answer
-    }
-
-    if (menuSelection == 3) {
+    case 3:
         userInput.AdditionalIncome = answer
     }
 
     return userInput
 }
 
-var smallerTaxesThreshold int = 30000;
-var smallerTaxesMultiplier float64 = 0.20;
-var higherTaxesMultiplier float64 = 0.25;
-func calculateTax(userInput UserInput) float64 {
-    var totalIncome float64
-    totalIncome = (userInput.YearlyIncome + userInput.AdditionalIncome) - userInput.TaxExemption
+const SMALLER_TAXES_THRESHOLD int = 30000
+const SMALLER_TAXES_MULTIPLIER float64 = 0.20
+const HIGHER_TAXES_MULTIPLIER float64 = 0.25
 
-    if (totalIncome < float64(smallerTaxesThreshold)) {
-        return totalIncome * smallerTaxesMultiplier
+func calculateTax(userInput UserInput) float64 {
+    totalIncome := (userInput.YearlyIncome + userInput.AdditionalIncome) - userInput.TaxExemption
+
+    if (totalIncome < float64(SMALLER_TAXES_THRESHOLD)) {
+        return totalIncome * SMALLER_TAXES_MULTIPLIER
     }
     
-    return totalIncome * higherTaxesMultiplier
+    return totalIncome * HIGHER_TAXES_MULTIPLIER
 }
 
-func GenerateQuestion(menuSelection int, userInput UserInput) float64 {
-    if (menuSelection == 4) {
+const CALCULATE_TAXES_OPTION int = 4
+
+func generateQuestion(menuSelection int, userInput UserInput) float64 {
+    if (menuSelection == CALCULATE_TAXES_OPTION) {
         taxExemption := calculateTax(userInput)
         fmt.Printf("\nTax: %f\n\n", taxExemption)
         return 0
@@ -80,14 +79,14 @@ func GenerateQuestion(menuSelection int, userInput UserInput) float64 {
 
     if (err != nil) {
         fmt.Printf("Bad input, input gain\n");
-        return GenerateQuestion(menuSelection, userInput)
+        return generateQuestion(menuSelection, userInput)
     }
 
     return selection
 }
 
-func ShowMenu() (int, bool) {
-    fmt.Printf("Select menu:\n%s", GetMenuOptions())
+func showMenu() (int, bool) {
+    fmt.Printf("\nSelect menu:\n\n%s", getMenuOptions())
 
     var selection int
 
@@ -100,25 +99,19 @@ func ShowMenu() (int, bool) {
     return selection, true
 }
 
-func GetMenuOptions() string {
-    // menuOptions := map[int]string {
-    //     1: "Input your yearly income (salary based)",
-    //     2: "Input the amount of tax exemption (if any)",
-    //     3: "Input your additional income",
-    //     4: "Calculate tax",
-    //     5: "Quit",
-    // }
-
-    var menuOptions [5]string
-    menuOptions[0] = "Input your yearly income (salary based)";
-    menuOptions[1] = "Input the amount of tax exemption (if any)";
-    menuOptions[2] = "Input your additional income";
-    menuOptions[3] = "Calculate tax";
-    menuOptions[4] = "Quit";
+func getMenuOptions() string {
+    var menuOptions = [...]string {
+        "Input your yearly income (salary based)",
+        "Input the amount of tax exemption (if any)",
+        "Input your additional income",
+        "Calculate tax",
+        "Quit",
+    }
     
     var menu string
     for key, menuOption := range menuOptions {
-        menu = menu + strconv.Itoa(key + 1) + ") " + menuOption + "\n"
+        key++
+        menu = menu + strconv.Itoa(key) + ") " + menuOption + "\n"
     }
 
     return menu
