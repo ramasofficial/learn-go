@@ -3,6 +3,9 @@ package console
 import (
     "fmt"
     "strconv"
+    "bufio"
+    "os"
+    "strings"
 )
 
 type UserInput struct {
@@ -78,7 +81,7 @@ func generateQuestion(menuSelection int, userInput UserInput) float64 {
     _, err := fmt.Scanln(&selection)
 
     if (err != nil) {
-        fmt.Printf("Bad input, input gain\n");
+        fmt.Printf("Bad input, input again\n");
         return generateQuestion(menuSelection, userInput)
     }
 
@@ -88,15 +91,21 @@ func generateQuestion(menuSelection int, userInput UserInput) float64 {
 func showMenu() (int, bool) {
     fmt.Printf("\nSelect menu:\n\n%s", getMenuOptions())
 
-    var selection int
-
-    _, err := fmt.Scanln(&selection)
+    reader := bufio.NewReader(os.Stdin)
+    selection, err := reader.ReadString('\n')
 
     if (err != nil) {
         return 0, false
     }
 
-    return selection, true
+    selection = strings.TrimSpace(selection)
+    selectionInteger, err := strconv.Atoi(selection)
+
+    if (err != nil) {
+        return 0, false
+    }
+
+    return selectionInteger, true
 }
 
 func getMenuOptions() string {
