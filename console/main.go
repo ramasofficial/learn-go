@@ -75,30 +75,32 @@ func generateQuestion(menuSelection int, userInput UserInput) float64 {
         3: "Input your additional income: ",
     }
 
-    var selection float64
+    fmt.Print(questions[menuSelection])
+    selection, ok := askConsoleInput();
 
-    fmt.Printf(questions[menuSelection] + "\n")
-    _, err := fmt.Scanln(&selection)
-
-    if (err != nil) {
+    if (!ok) {
         fmt.Printf("Bad input, input again\n");
         return generateQuestion(menuSelection, userInput)
     }
 
-    return selection
+    selectionFloat, err := strconv.ParseFloat(selection, 64)
+
+    if (err != nil) {
+        fmt.Printf("Bad input, input again\n\n");
+        return generateQuestion(menuSelection, userInput)
+    }
+
+    return selectionFloat
 }
 
 func showMenu() (int, bool) {
     fmt.Printf("\nSelect menu:\n\n%s", getMenuOptions())
+    selection, ok := askConsoleInput();
 
-    reader := bufio.NewReader(os.Stdin)
-    selection, err := reader.ReadString('\n')
-
-    if (err != nil) {
+    if (!ok) {
         return 0, false
     }
 
-    selection = strings.TrimSpace(selection)
     selectionInteger, err := strconv.Atoi(selection)
 
     if (err != nil) {
@@ -106,6 +108,17 @@ func showMenu() (int, bool) {
     }
 
     return selectionInteger, true
+}
+
+func askConsoleInput() (string, bool) {
+    reader := bufio.NewReader(os.Stdin)
+    selection, err := reader.ReadString('\n')
+
+    if (err != nil) {
+        return "", false
+    }
+
+    return strings.TrimSpace(selection), true
 }
 
 func getMenuOptions() string {
